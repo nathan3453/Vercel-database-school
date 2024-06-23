@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import mysql from 'mysql2/promise';
+import mysql, { RowDataPacket } from 'mysql2/promise';
 
 interface User {
   id: number;
@@ -21,11 +21,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     });
 
     // Example SQL query to fetch users from 'users' table
-    const [rows] = await connection.execute<User[]>('SELECT * FROM users');
+    const [rows] = await connection.execute<RowDataPacket[]>('SELECT * FROM users');
 
     await connection.end();
 
-    const responseData: Data = { data: rows };
+    // Transform RowDataPacket[] to User[]
+    const users: User[] = rows.map((row: RowDataPacket) => ({
+      id: row.id,
+      username: row.username,
+      email: row.email,
+    }));
+
+    const responseData: Data = { data: users };
 
     res.status(200).json(responseData);
   } catch (error: any) {

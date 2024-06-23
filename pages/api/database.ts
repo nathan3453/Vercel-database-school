@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import mysql from 'mysql2/promise';
 
 type Data = {
-  message: string; // Ensure 'message' property is always present
+  message: string;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {

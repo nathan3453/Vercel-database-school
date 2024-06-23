@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import mysql from 'mysql2/promise';
 
 type Data = {
-  message: string;
+  rows: any[]; // Define the structure of 'rows' based on your database query result
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -17,7 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const [rows] = await connection.execute('SELECT * FROM your_table');
     await connection.end();
 
-    res.status(200).json({ data: rows });
+    const responseData: Data = { rows }; // Assign 'rows' to 'data' property of type 'Data'
+
+    res.status(200).json(responseData);
   } catch (error: any) {
     const errorMessage = typeof error === 'string' ? error : error.message || 'Unknown error';
     res.status(500).json({ message: errorMessage });

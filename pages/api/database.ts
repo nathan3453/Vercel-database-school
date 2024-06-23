@@ -1,8 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mysql from 'mysql2/promise';
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
 interface Data {
-  data: any[]; // Define the structure of 'data' based on your database query result
+  data: User[];
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -14,10 +20,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       database: process.env.DATABASE_NAME!,
     });
 
-    const [rows] = await connection.execute('SELECT * FROM your_table');
+    // Example SQL query to fetch users from 'users' table
+    const [rows] = await connection.execute<User[]>('SELECT * FROM users');
+
     await connection.end();
 
-    const responseData: Data = { data: rows }; // Ensure 'data' property matches Data interface
+    const responseData: Data = { data: rows };
 
     res.status(200).json(responseData);
   } catch (error: any) {
